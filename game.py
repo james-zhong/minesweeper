@@ -20,6 +20,27 @@ class square:
 #----------------------------------------------------------------------
 
 running = True
+generated = False
+max_bombs = 20
+no_of_bombs = 0
+bomb_coords = []
+
+def generate():
+    # Place squares
+    global generated
+    
+    newSqr = square()
+    coordinates = [(j*50, i*50) for i in range(10) for j in range(10)]
+
+    bomb_coords = random.choices(coordinates, k=max_bombs)
+    
+    if not generated:
+        generated = True
+        for coord in coordinates:
+            if coord in bomb_coords:
+                newSqr.place(*coord, (255, 0, 0))
+            else:
+                newSqr.place(*coord, (255, 255, 255))
 
 while running:
     deltaTime = clock.tick(framerate)
@@ -29,14 +50,8 @@ while running:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
-    
-    # Placing squares
-    
-    newSqr = square()
-    coordinates = [(j*50, i*50) for i in range(10) for j in range(10)]
-
-    for coord in coordinates:
-        newSqr.place(*coord, (150, 150, 150))
+            
+    generate()
 
     # Refresh display
     pygame.display.flip()

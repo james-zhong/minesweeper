@@ -20,27 +20,35 @@ class square:
 #----------------------------------------------------------------------
 
 running = True
+text = pygame.font.Font("assets/fonts/LeagueSpartan-ExtraBold.ttf", 12)
 generated = False
 max_bombs = 20
 no_of_bombs = 0
 bomb_coords = []
+rows = 10
+columns = 10
 
 def generate():
     # Place squares
     global generated
     
     newSqr = square()
-    coordinates = [(j*50, i*50) for i in range(10) for j in range(10)]
+    coordinates = [(j*50, i*50) for i in range(rows) for j in range(columns)]
 
-    bomb_coords = random.choices(coordinates, k=max_bombs)
+    mine_coords = random.sample(coordinates, max_bombs)
+    cell_coords = [coord for coord in coordinates if coord not in mine_coords]
     
     if not generated:
         generated = True
         for coord in coordinates:
-            if coord in bomb_coords:
+            if coord in mine_coords:
                 newSqr.place(*coord, (255, 0, 0))
             else:
                 newSqr.place(*coord, (255, 255, 255))
+            
+        for cell in cell_coords:
+            numberText = text.render(str(coordinates.index(cell)), True, (0,0,0))
+            screen.blit(numberText, cell_coords[cell_coords.index(cell)])
 
 while running:
     deltaTime = clock.tick(framerate)

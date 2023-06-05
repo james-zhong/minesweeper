@@ -11,8 +11,8 @@ framerate = 60 # frames, target framerate
 # Classes
 class square:
     def __init__(self):
-        self.width = 50 #px
-        self.height = 50 #px
+        self.width = 49 #px
+        self.height = 49 #px
     
     # Draw square on cube
     def place(self, x, y, colour):
@@ -20,7 +20,7 @@ class square:
 #----------------------------------------------------------------------
 
 running = True
-text = pygame.font.Font("assets/fonts/LeagueSpartan-ExtraBold.ttf", 12)
+text = pygame.font.Font("assets/fonts/LeagueSpartan-ExtraBold.ttf", 24)
 generated = False
 max_bombs = 20
 no_of_bombs = 0
@@ -36,7 +36,6 @@ def generate():
     coordinates = [(j*50, i*50) for i in range(rows) for j in range(columns)]
 
     mine_coords = random.sample(coordinates, max_bombs)
-    cell_coords = [cell for cell in coordinates if cell not in mine_coords]
     
     if not generated:
         generated = True
@@ -77,7 +76,8 @@ def generate():
                 neighbours = [x+1, x-rows, x+rows, (x-rows)+1, (x+rows)+1]
             elif (x+1) % rows == 0: # Cell at right side of grid
                 neighbours = [x-1, x-rows, x+rows, (x-rows)-1, (x+rows)-1]
-            else: # Cell is not at a corner or side
+            # Cell is not at corner or side
+            else:
                 neighbours = [x+1, x-1, x-rows, x+rows, (x-rows)+1, (x-rows)-1, (x+rows)+1, (x+rows)-1]
                 
             for n in neighbours:
@@ -89,7 +89,10 @@ def generate():
                 continue
             
             numberText = text.render(str(neighbouring_mines), True, (0,0,0))
-            screen.blit(numberText, cell_coords[cell_coords.index(coord)])
+            # Center the text on cells
+            xPos = coordinates[x][0] + newSqr.width / 2
+            yPos = coordinates[x][1] + newSqr.height / 2
+            screen.blit(numberText, numberText.get_rect(center=(xPos, yPos)))
 
 while running:
     deltaTime = clock.tick(framerate)

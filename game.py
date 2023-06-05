@@ -36,19 +36,60 @@ def generate():
     coordinates = [(j*50, i*50) for i in range(rows) for j in range(columns)]
 
     mine_coords = random.sample(coordinates, max_bombs)
-    cell_coords = [coord for coord in coordinates if coord not in mine_coords]
+    cell_coords = [cell for cell in coordinates if cell not in mine_coords]
     
     if not generated:
         generated = True
         for coord in coordinates:
-            if coord in mine_coords:
-                newSqr.place(*coord, (255, 0, 0))
+            if coord not in mine_coords:
+                newSqr.place(*coord, (100, 100, 100))
             else:
-                newSqr.place(*coord, (255, 255, 255))
+                newSqr.place(*coord, (255, 0 ,0))
             
-        for cell in cell_coords:
-            numberText = text.render(str(coordinates.index(cell)), True, (0,0,0))
-            screen.blit(numberText, cell_coords[cell_coords.index(cell)])
+            # Check how many mines are neighbouring the cells
+            # Skip if is a bomb
+            if coord in mine_coords:
+                continue
+            
+            neighbouring_mines = 0
+            x = coordinates.index(coord)
+            
+            # I really do not know how to do this better
+            # Calculate the amount of neighbouring mines
+            
+            neighbours=[]
+            
+            # Corners
+            if x == 0: # Cell in top left corner
+                neighbours = [x+1, x+rows, (x+rows)+1]
+            elif x == rows-1: # Cell in top right corner
+                neighbours = [x-1, x+rows, (x+rows)-1]
+            elif x == len(coordinates)-1: # Cell in bottom right corner
+                neighbours == [x-1, x-rows, (x-rows)-1]
+            elif x == len(coordinates)-rows+1: # Cell in bottom left corner
+                neighbours = [x+1, x-rows, (x-rows)+1]
+            # Sides
+            elif x < rows: # Cell at top of grid
+                neighbours = [x-1, x+1, x+rows, (x+rows)+1, (x+rows)-1] 
+            elif x > len(coordinates)-rows-1: # cell at bottom of grid
+                neighbours = [x+1, x-1, x-rows, (x-rows)-1, (x-rows)+1]
+            elif x % rows == 0: # Cell at left side of grid    
+                neighbours = [x+1, x-rows, x+rows, (x-rows)+1, (x+rows)+1]
+            elif (x+1) % rows == 0: # Cell at right side of grid
+                neighbours = [x-1, x-rows, x+rows, (x-rows)-1, (x+rows)-1]
+            else: # Cell is not at a corner or side
+                neighbours = [x+1, x-1, x-rows, x+rows, (x-rows)+1, (x-rows)-1, (x+rows)+1, (x+rows)-1]
+                
+            for n in neighbours:
+                if coordinates[n] in mine_coords:
+                    neighbouring_mines += 1
+            
+            # Leave cells without any neighbouring mines blank
+            if neighbouring_mines == 0:
+                continue
+            
+            numberText = text.render(str(neighbouring_mines), True, (0,0,0))
+            screen.blit(numberText, cell_coords[cell_coords.index(coord)])
 
 while running:
     deltaTime = clock.tick(framerate)

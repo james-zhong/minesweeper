@@ -1,6 +1,7 @@
 # Minesweeper game using the Pygame library
 
-import pygame, sys, random, time
+import pygame, sys, random
+from timeit import default_timer as timer
 
 # Initialization
 pygame.init()
@@ -37,7 +38,7 @@ def generate():
     # Place squares
     global generated, coordinates, mine_coords, time_taken, get_time
 
-    time_begun = time.time()
+    time_begun = timer()
     newSqr = square()
     coordinates = [(j*50, i*50) for i in range(rows) for j in range(columns)]
     
@@ -106,7 +107,7 @@ def generate():
         
         if get_time:
             get_time = False
-            time_taken = time.time() - time_begun
+            time_taken = timer() - time_begun
         
 def instructions():
     generateText = instruction_text.render("Press 'Space' to generate", True, (255,255,255))

@@ -107,7 +107,7 @@ def generate():
         
         if get_time:
             get_time = False
-            time_taken = timer() - time_begun
+            time_taken = round(timer() - time_begun, 10)
         
 def instructions():
     generateText = instruction_text.render("Press 'Space' to generate", True, (255,255,255))

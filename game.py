@@ -7,21 +7,10 @@ from timeit import default_timer as timer
 pygame.init()
 screen = pygame.display.set_mode((500,550)) # Set window resolution
 #----------------------------------------------------------------------
-# Classes
-class square:
-    def __init__(self):
-        self.width = 49 #px
-        self.height = 49 #px
-    
-    # Draw square on cube
-    def place(self, x, y, colour):
-        pygame.draw.rect(screen, colour, pygame.Rect(x, y, self.width, self.height))
-#----------------------------------------------------------------------
-
+# Variables
 running = True
 mine_num_text = pygame.font.Font("assets/fonts/LeagueSpartan-ExtraBold.ttf", 24)
 instruction_text = pygame.font.Font("assets/fonts/LeagueSpartan-ExtraBold.ttf", 16)
-mine_img = pygame.image.load("assets/images/mine.png")
 generated = False
 get_time = False
 max_bombs = 20
@@ -31,20 +20,38 @@ rows = 10
 columns = 10
 time_taken = 0 # In seconds
 
-coordinates = [(j*50, i*50) for i in range(rows) for j in range(columns)]
-mine_coords = random.sample(coordinates, max_bombs)
+coordinates = []
+mine_coords = None
+#----------------------------------------------------------------------
+# Classes
+class square:
+    def __init__(self):
+        # Dimensions are 1 pixel smaller to get a "border" effect
+        self.width = (500/rows)-1 #px
+        self.height = (500/rows)-1 #px
+    
+    # Draw square on cube
+    def place(self, x, y, colour):
+        pygame.draw.rect(screen, colour, pygame.Rect(x, y, self.width, self.height))
+#----------------------------------------------------------------------
+# Functions
 
 def generate():
     # Place squares
-    global generated, coordinates, mine_coords, time_taken, get_time
+    global generated, coordinates, max_bombs, mine_coords, time_taken, get_time
 
     time_begun = timer()
     newSqr = square()
-    coordinates = [(j*50, i*50) for i in range(rows) for j in range(columns)]
     
     if not generated:
         get_time = True
         generated = True
+        coordinates = [(j*(500/rows), i*(500/rows)) for i in range(rows) for j in range(columns)]
+        
+        # Prevent too many mines being placed with insuffiencient amount of cells, otherwise random.sample throws an error
+        if max_bombs > rows*columns:
+            max_bombs = rows*columns-1
+        
         mine_coords = random.sample(coordinates, max_bombs)
         
     for coord in coordinates:
@@ -53,7 +60,6 @@ def generate():
             newSqr.place(*coord, (100, 100, 100))
         else:
             newSqr.place(*coord, (255, 0 ,0))
-            screen.blit(mine_img, coord)
         
         # Check how many mines are neighbouring the cells
         # Skip if is a bomb

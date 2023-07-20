@@ -1,4 +1,4 @@
-# Minesweeper game using the Pygame library
+# Minesweeper generation using the Pygame library
 
 import pygame, sys, random
 from timeit import default_timer as timer
@@ -70,6 +70,8 @@ def generate():
         x = coordinates.index(coord)
         
         # I really do not know how to do this better
+        # 20th July 2023 - I have no idea the following code is anymore, but I will try and fix the bug from 10 years ago...
+        
         # Calculate the amount of neighbouring mines
         
         neighbours=[]
